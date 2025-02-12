@@ -6,8 +6,7 @@
     <title>File Hash Generator</title>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
-        input { margin-top: 20px; }
-        button { margin-top: 10px; }
+        input, button { margin-top: 10px; }
         #hashOutput { margin-top: 20px; word-wrap: break-word; }
     </style>
 </head>
@@ -32,14 +31,25 @@
             const arrayBuffer = await file.arrayBuffer();
             const hashBuffer = await crypto.subtle.digest("SHA-256", arrayBuffer);
             const hashArray = Array.from(new Uint8Array(hashBuffer));
-            const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, "0")).join("");
+            const hashLower = hashArray.map(byte => byte.toString(16).padStart(2, "0")).join("");
+            const hashUpper = hashLower.toUpperCase();
 
-            hashOutput.innerText = `SHA-256 Hash: ${hashHex}`;
+            hashOutput.innerHTML = `
+                <strong>SHA-256 Hash (Lowercase):</strong> ${hashLower}<br>
+                <strong>SHA-256 Hash (Uppercase):</strong> ${hashUpper}<br>
+                <small>Both values are the same, just displayed in different cases.</small>
+            `;
         }
 
         function copyToClipboard() {
-            const hashText = document.getElementById("hashOutput").innerText.replace("SHA-256 Hash: ", "");
+            const hashText = document.getElementById("hashOutput").innerText
+                .replace("SHA-256 Hash (Lowercase): ", "")
+                .replace("SHA-256 Hash (Uppercase): ", "")
+                .replace("Both values are the same, just displayed in different cases.", "")
+                .trim();
+
             if (!hashText) return;
+
             navigator.clipboard.writeText(hashText).then(() => {
                 alert("Hash copied to clipboard!");
             });
