@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Hash Generator</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
+        input { margin-top: 20px; }
+        button { margin-top: 10px; }
+        #hashOutput { margin-top: 20px; word-wrap: break-word; }
+    </style>
+</head>
+<body>
+    <h2>SHA-256 File Hash Generator</h2>
+    <input type="file" id="fileInput">
+    <button onclick="computeHash()">Generate Hash</button>
+    <p id="hashOutput"></p>
+    <button onclick="copyToClipboard()">Copy Hash</button>
+
+    <script>
+        async function computeHash() {
+            const fileInput = document.getElementById("fileInput");
+            const hashOutput = document.getElementById("hashOutput");
+
+            if (fileInput.files.length === 0) {
+                alert("Please select a file.");
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const arrayBuffer = await file.arrayBuffer();
+            const hashBuffer = await crypto.subtle.digest("SHA-256", arrayBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, "0")).join("");
+
+            hashOutput.innerText = `SHA-256 Hash: ${hashHex}`;
+        }
+
+        function copyToClipboard() {
+            const hashText = document.getElementById("hashOutput").innerText.replace("SHA-256 Hash: ", "");
+            if (!hashText) return;
+            navigator.clipboard.writeText(hashText).then(() => {
+                alert("Hash copied to clipboard!");
+            });
+        }
+    </script>
+</body>
+</html>
