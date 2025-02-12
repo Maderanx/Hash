@@ -14,13 +14,22 @@
     <h2>SHA-256 File Hash Generator</h2>
     <input type="file" id="fileInput">
     <button onclick="computeHash()">Generate Hash</button>
-    <p id="hashOutput"></p>
-    <button onclick="copyToClipboard()">Copy Hash</button>
+
+    <p><strong>SHA-256 Hash (Lowercase):</strong></p>
+    <p id="hashLowerOutput"></p>
+    <button onclick="copyToClipboard('hashLowerOutput')">Copy Lowercase Hash</button>
+
+    <p><strong>SHA-256 Hash (Uppercase):</strong></p>
+    <p id="hashUpperOutput"></p>
+    <button onclick="copyToClipboard('hashUpperOutput')">Copy Uppercase Hash</button>
+
+    <p><small>Both values are the same, just displayed in different cases.</small></p>
 
     <script>
         async function computeHash() {
             const fileInput = document.getElementById("fileInput");
-            const hashOutput = document.getElementById("hashOutput");
+            const hashLowerOutput = document.getElementById("hashLowerOutput");
+            const hashUpperOutput = document.getElementById("hashUpperOutput");
 
             if (fileInput.files.length === 0) {
                 alert("Please select a file.");
@@ -34,20 +43,12 @@
             const hashLower = hashArray.map(byte => byte.toString(16).padStart(2, "0")).join("");
             const hashUpper = hashLower.toUpperCase();
 
-            hashOutput.innerHTML = `
-                <strong>SHA-256 Hash (Lowercase):</strong> ${hashLower}<br>
-                <strong>SHA-256 Hash (Uppercase):</strong> ${hashUpper}<br>
-                <small>Both values are the same, just displayed in different cases.</small>
-            `;
+            hashLowerOutput.innerText = hashLower;
+            hashUpperOutput.innerText = hashUpper;
         }
 
-        function copyToClipboard() {
-            const hashText = document.getElementById("hashOutput").innerText
-                .replace("SHA-256 Hash (Lowercase): ", "")
-                .replace("SHA-256 Hash (Uppercase): ", "")
-                .replace("Both values are the same, just displayed in different cases.", "")
-                .trim();
-
+        function copyToClipboard(elementId) {
+            const hashText = document.getElementById(elementId).innerText;
             if (!hashText) return;
 
             navigator.clipboard.writeText(hashText).then(() => {
